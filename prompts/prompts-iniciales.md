@@ -278,7 +278,7 @@ Simulate dragging a candidate card from one column to another. Verify that:
 
 Sub-scenarios:
 - **Happy path:** Valid drag from source column to target column — card appears in target, disappears from source, PUT is called.
-- **API error on drop:** `PUT /candidates/:id` fails (400/500) — card reverts to original column (optimistic rollback).
+- **API error on drop:** `PUT /candidates/:id` fails (400/500) — card stays in new column (no rollback — known gap, see Prompt 4).
 - **Drop outside board:** Card does not move when dropped outside any column.
 - **Drop on same column:** Dragging and dropping on the same column does not change state.
 
@@ -458,7 +458,7 @@ Read these before starting:
 
 1. `frontend/cypress.config.ts` — Cypress configuration
 2. `frontend/cypress/tsconfig.json` — TypeScript config for Cypress
-3. `frontend/cypress/fixtures/position-detail.json` — mock data
+3. `frontend/cypress/fixtures/position-detail/interviewFlow.json`, `position-detail/candidates.json`, `position-detail/candidateDetail.json` — mock data (split files in position-detail/ directory)
 4. `frontend/cypress/support/commands.ts` — custom commands
 5. `frontend/cypress/e2e/position-detail.cy.ts` — the test file
 

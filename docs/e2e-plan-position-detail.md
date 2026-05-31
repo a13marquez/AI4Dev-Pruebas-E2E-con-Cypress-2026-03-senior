@@ -100,7 +100,7 @@ All API responses are stubbed in `beforeEach` using `cy.intercept`. No real back
 |---|---|---|---|
 | 2a | **Happy path** | Card in column A, `PUT /candidates/:id` → 200 | Card appears in column B, disappears from column A |
 | 2b | **PUT body verification** | Same as 2a | `PUT /candidates/:id` called with `{ applicationId, currentInterviewStep }` |
-| 2c | **API error** | `PUT /candidates/:id` → 500 | Card stays in original column (note: no explicit rollback in code — error is silently logged) |
+| 2c | **API error** | `PUT /candidates/:id` → 500 | Card stays in new column (no rollback — known gap: onDragEnd mutates local state before the PUT, error is silently logged) |
 | 2d | **Drop outside board** | Start drag but release outside droppable | Card stays in original column |
 | 2e | **Drop on same column** | Drag within same column and release | Card stays in same column, no PUT called |
 

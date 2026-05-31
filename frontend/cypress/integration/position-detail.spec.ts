@@ -176,6 +176,8 @@ describe('Position Detail Page', () => {
     });
 
     it('2d. keeps card in original column when dropped outside the board', () => {
+      cy.intercept('PUT', '**/candidates/1', { statusCode: 200 }).as('putCandidateOutside');
+
       cy.visit('/positions/1');
       cy.wait('@getInterviewFlow');
       cy.wait('@getCandidates');
@@ -183,31 +185,29 @@ describe('Position Detail Page', () => {
       cy.contains('.card-title', 'John Doe')
         .closest('.card.mb-2')
         .then(($card) => {
-          const dataTransfer = new DataTransfer();
-          const card = $card[0];
-          card.dispatchEvent(
-            new DragEvent('dragstart', { dataTransfer, bubbles: true, cancelable: true })
-          );
+          const rect = $card[0].getBoundingClientRect();
+          const cardCenterX = rect.left + rect.width / 2;
+          const cardCenterY = rect.top + rect.height / 2;
 
-          // Drop on a non-droppable element (the page heading)
-          cy.get('h2').then(($h2) => {
-            const h2 = $h2[0];
-            h2.dispatchEvent(
-              new DragEvent('dragover', { dataTransfer, bubbles: true, cancelable: true })
-            );
-            h2.dispatchEvent(
-              new DragEvent('drop', { dataTransfer, bubbles: true, cancelable: true })
-            );
-            card.dispatchEvent(
-              new DragEvent('dragend', { dataTransfer, bubbles: true, cancelable: true })
-            );
-          });
+          // Move mouse to a point well outside any droppable area (above the heading)
+          const outsideY = cardCenterY - 400;
+          const steps = 5;
+          const stepY = (outsideY - cardCenterY) / steps;
+
+          cy.wrap($card).realMouseDown();
+          for (let i = 1; i <= steps; i++) {
+            cy.get('body').realMouseMove(0, stepY);
+            cy.wait(80);
+          }
+          cy.get('body').realMouseUp();
         });
 
       cy.contains('.card-header', 'Initial Screening')
         .closest('.card')
         .find('.card-title')
         .should('contain', 'John Doe');
+
+      cy.get('@putCandidateOutside.all').should('have.length', 0);
     });
 
     it('2e. keeps card in same column and makes no PUT when dropped in same column', () => {
@@ -224,8 +224,7 @@ describe('Position Detail Page', () => {
         .find('.card-title')
         .should('contain', 'John Doe');
 
-      // NOTE: The current implementation does NOT guard against same-column drops,
-      // so a PUT request is still fired. This test documents that known behaviour.
+      // RBD optimizes same-position drops so onDragEnd is not called — no PUT fires.
       cy.get('@putCandidateSame.all').should('have.length', 0);
     });
 
