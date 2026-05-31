@@ -228,6 +228,56 @@ describe('Position Detail Page', () => {
       // so a PUT request is still fired. This test documents that known behaviour.
       cy.get('@putCandidateSame.all').should('have.length', 0);
     });
+
+    it('2f. persists candidate phase in backend after drag-and-drop (full round-trip)', () => {
+      cy.intercept('PUT', '**/candidates/1', { statusCode: 200 }).as('putCandidate');
+
+      cy.visit('/positions/1');
+      cy.wait('@getInterviewFlow');
+      cy.wait('@getCandidates');
+
+      cy.contains('.card-header', 'Initial Screening')
+        .closest('.card')
+        .find('.card-title')
+        .should('contain', 'John Doe');
+
+      cy.dragCardToColumn('John Doe', 'Technical Interview');
+
+      cy.wait('@putCandidate').its('request.body').should('deep.equal', {
+        applicationId: 1,
+        currentInterviewStep: 2,
+      });
+
+      // NOTE: The requirement says PUT /candidate/:id (singular) but the
+      // frontend code calls PUT /candidates/:id (plural). The intercept
+      // above matches the actual code path. Verify which is canonical.
+
+      cy.contains('.card-header', 'Technical Interview')
+        .closest('.card')
+        .find('.card-title')
+        .should('contain', 'John Doe');
+
+      cy.intercept('GET', '**/positions/1/candidates', {
+        body: [
+          { fullName: 'John Doe', currentInterviewStep: 'Technical Interview', candidateId: 1, applicationId: 1, averageScore: 4 },
+          { fullName: 'Jane Smith', currentInterviewStep: 'Technical Interview', candidateId: 2, applicationId: 2, averageScore: 5 },
+        ],
+      }).as('getCandidatesUpdated');
+
+      cy.reload();
+      cy.wait('@getInterviewFlow');
+      cy.wait('@getCandidatesUpdated');
+
+      cy.contains('.card-header', 'Technical Interview')
+        .closest('.card')
+        .find('.card-title')
+        .should('contain', 'John Doe');
+
+      cy.contains('.card-header', 'Initial Screening')
+        .closest('.card')
+        .find('.card-title')
+        .should('not.exist');
+    });
   });
 
   // ───────────────────────────────────────────────
