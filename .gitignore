@@ -24,5 +24,9 @@ yarn-error.log*
 # IDE
 .idea
 .vscode
+.cursor
+
+# Local tool artifacts
+.codegraph
 
 # .env
