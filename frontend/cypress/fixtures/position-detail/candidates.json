@@ -1,0 +1,4 @@
+[
+  { "fullName": "John Doe", "currentInterviewStep": "Initial Screening", "candidateId": 1, "applicationId": 1, "averageScore": 4 },
+  { "fullName": "Jane Smith", "currentInterviewStep": "Technical Interview", "candidateId": 2, "applicationId": 2, "averageScore": 5 }
+]

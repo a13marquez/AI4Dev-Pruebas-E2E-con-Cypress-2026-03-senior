@@ -1,0 +1,20 @@
+{
+  "id": 1,
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john@example.com",
+  "phone": "123456789",
+  "address": "123 Main St",
+  "educations": [
+    { "id": 1, "institution": "University A", "title": "BSc CS", "startDate": "2015-09-01T00:00:00.000Z", "endDate": "2019-06-01T00:00:00.000Z" }
+  ],
+  "workExperiences": [
+    { "id": 1, "company": "Company A", "position": "Dev", "description": "Worked", "startDate": "2019-07-01T00:00:00.000Z", "endDate": "2021-08-01T00:00:00.000Z" }
+  ],
+  "resumes": [
+    { "id": 1, "filePath": "/resumes/john.pdf", "fileType": "application/pdf", "uploadDate": "2024-01-01T00:00:00.000Z" }
+  ],
+  "applications": [
+    { "id": 1, "position": { "id": 1, "title": "Senior Full-Stack Engineer" }, "applicationDate": "2024-01-15T00:00:00.000Z", "interviews": [] }
+  ]
+}
